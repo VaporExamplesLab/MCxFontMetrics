@@ -109,7 +109,8 @@ final class MCxFontMetricsTests: XCTestCase {
             
             // Check some outcome
             //XCTAssertNotNil(try? testFolder.file(named: "Hello.swift"))
-        } catch {
+        } 
+        catch {
             throw MCxFontMetrics.Error.failedToDoSomething
         }
     }

@@ -15,12 +15,26 @@ public final class MCxFontMetrics {
     }
 
     public func run() throws {
-        print("Hello world")
-        
-        let fontFamily = FontHelper.PostscriptName.gaugeRegular
-        let fontSize: CGFloat = 12.0
-        
+        // Fonts used by labels.
+        processOneFont(fontFamily: .gaugeRegular, fontSize: 12.0)
+        processOneFont(fontFamily: .gaugeHeavy, fontSize: 12.0)
+        processOneFont(fontFamily: .dejaVuCondensed, fontSize: 12.0)
+        processOneFont(fontFamily: .mswImpact, fontSize: 12.0)
+        processOneFont(fontFamily: .dejaVuMono, fontSize: 12.0)
+        processOneFont(fontFamily: .liberationNarrow, fontSize: 12.0)
+
+        // Font size 48.0 used used to generate FontMetricsPage.
+        processOneFont(fontFamily: .gaugeRegular, fontSize: 48.0)
+        processOneFont(fontFamily: .gaugeHeavy, fontSize: 48.0)
+        processOneFont(fontFamily: .dejaVuCondensed, fontSize: 48.0)
+        processOneFont(fontFamily: .mswImpact, fontSize: 48.0)
+        processOneFont(fontFamily: .dejaVuMono, fontSize: 48.0)
+        processOneFont(fontFamily: .liberationNarrow, fontSize: 48.0)
+    }
+    
+    internal func processOneFont(fontFamily: FontHelper.PostscriptName, fontSize: CGFloat) {
         let extractor = try! FontMetricsExtractor(fontFamily: fontFamily, fontSize: fontSize)
+        let lookupMap = extractor.createUTF32MetricsMap()
         
         let fontMetric = FontPointFamilyMetrics(
             fontFamily: fontFamily, 
@@ -30,7 +44,9 @@ public final class MCxFontMetrics {
             ptsLeading: extractor.ptsLeading(), 
             ptsCapHeight: extractor.ptsCapHeight(), 
             glyphUnitsPerEm: extractor.glyphUnitsPerEm(), 
-            ptsPerGlyphUnits: extractor.ptsPerGlyphUnits())
+            ptsPerGlyphUnits: extractor.ptsPerGlyphUnits(),
+            lookup: lookupMap
+        )
         
         FontPointFamilyMetrics.fileSave(fontMetric)
         

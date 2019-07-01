@@ -150,9 +150,78 @@ struct FontMetricsExtractor {
         return glyphToUnicode
     }
     
-    func getGlyphWithMaxAscent() {
+    func createUTF32MetricsMap() ->  [UTF32Char: FontPointMetrics] {
+        // Get all characters of the font with CTFontCopyCharacterSet().
+        let charset = CTFontCopyCharacterSet(ctFont) as CharacterSet
+        
+        var utf32ToMetrics = [UTF32Char: FontPointMetrics]() // Start with empty map.
+        
+        // Enumerate all Unicode scalar values from the character set:
+        for plane: UInt8 in 0...16 where charset.hasMember(inPlane: plane) {
+            // 
+            for utf32Char: UTF32Char in UTF32Char(plane) << 16 ..< UTF32Char(plane + 1) << 16 {
+                // Range limit for smaller tables. 
+                // Comment out range limit to include all characters.
+                // Modify range limit check to include select table areas.
+                // :NYI: add some [RangeCheck]? to the argument list.
+                //if utf32Char >= 0x00000600 {
+                //    continue
+                //}
+                
+                if let unicodeScalar = UnicodeScalar(utf32Char), charset.contains(unicodeScalar) {
+                    
+                    //UTF16Char(truncatingIfNeeded: <#T##BinaryInteger#>)
+                    
+                    let characterStr = String(unicodeScalar)
+                    // Get glyph for this `uniChar` ...
+                    // let unichar16 = [UniChar](unicodeScalar.utf16)
+                    let utf16CharArray: [UTF16.CodeUnit] = Array(unicodeScalar.utf16)
+                    //UInt32.max
+                    if utf16CharArray.count != 1 {
+                        print("WARNING: utf16CharArray.count != 1 \(utf16CharArray) unicodeScalar=\(unicodeScalar.value) ")
+                        continue
+                    }
+                    
+                    var glyphs = [CGGlyph](repeating: 0, count: utf16CharArray.count)
+                    if CTFontGetGlyphsForCharacters(
+                        ctFont,         // font: CTFont
+                        utf16CharArray,      // characters: UnsafePointer<UniChar>
+                        &glyphs,        // UnsafeMutablePointer<CGGlyph>
+                        utf16CharArray.count // count: CFIndex
+                        ) {
+                        // ... and add it to the map.
+                        
+                        let advance = getAdvances(string: characterStr)!.width
+                        let rectBounds = getBoundingRects(string: characterStr)!.list[0]
+                        let rectOptical = getOpticalRects(string: characterStr)!.list[0]
+                        
+                        do {
+                            let metrics = try FontPointMetrics(
+                                characterStr,
+                                advance: advance,
+                                rectBounds: rectBounds,
+                                rectOptical: rectOptical 
+                            )
+                            
+                            utf32ToMetrics[utf32Char] = metrics
+                        }
+                        catch {
+                            print("WARNING: \(characterStr) not found in CharacterSet")
+                        }
+                        
+                    }
+                }
+            }
+        }
+        
+        return utf32ToMetrics
+    }
+    
+    // :WIP: getGlyphWithMaxAscent has not been fully implemented
+    func getGlyphWithMaxAscent() -> CGGlyph {
         var maxAscent: CGFloat = 0.0
-        var resultGlyph = CGGlyph(0)
+        var resultGlyph: CGGlyph = 0
+        var _ = CGGlyph(0) // resultGlyph
         for i in 0 ..< cgFont.numberOfGlyphs {
             let glyph = CGGlyph(i)
             
@@ -172,7 +241,7 @@ struct FontMetricsExtractor {
                 maxAscent = glyphTotalHeight - glyphDescent
             }
             
-            let char: Character = "A"
+            let _: Character = "A"
             
             //cgFont.table(for: <#T##UInt32#>)
             
@@ -192,11 +261,9 @@ struct FontMetricsExtractor {
             //    cgFont.getGlyphWithGlyphName(name: glyphNameCFStr)
             //}
             
-            
-            
         }
         
-        
+        return resultGlyph
     }
     
     func getGlyphWithMaxDecent() {
@@ -289,7 +356,7 @@ struct FontMetricsExtractor {
         
         var i = 0
         for idx in string.indices {
-            let unichar: UniChar = buffer[i] // UInt16
+            let unichar: UniChar = buffer[i] // aka UTF16Char, UInt16
             let hexcode = String(format: "%04x", unichar)
             let character: Character = string[idx]
             
