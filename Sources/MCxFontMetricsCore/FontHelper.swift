@@ -20,7 +20,7 @@ public struct FontHelper {
     ///
     /// Regex: find: `(^.*$)` replace: case `$1 = "$1"`
     ///
-    public enum PostscriptName: String {
+    public enum PostscriptName: String, Codable {
         /// DejaVu Condensed Mono
         case dejaVuCondensed = "DejaVuSansCondensed"
         case dejaVuCondensedBold = "DejaVuSansCondensed-Bold"
@@ -214,8 +214,8 @@ public struct FontHelper {
     }
     
     /// Use either the font's PostScript name or full name
-    static func getCTFont(font: FontHelper.PostscriptName, fontsize: CGFloat) -> CTFont? {
-        let cfsFontName: CFString = font.rawValue as CFString
+    static func getCTFont(fontFamily: FontHelper.PostscriptName, fontsize: CGFloat) -> CTFont? {
+        let cfsFontName: CFString = fontFamily.rawValue as CFString
         
         guard let cgFont = CGFont(cfsFontName) else {
             return nil

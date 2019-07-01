@@ -232,34 +232,34 @@ struct FontMetricsExtractor {
         return (overall: opticalBox, list: opticalRects)
     }
     
-    /// ascent: max distance above baseline in points
-    func ascent() -> CGFloat {
+    /// ptsAscent: max distance above baseline in points
+    func ptsAscent() -> CGFloat {
         let ascentGlyphUnits = CGFloat(cgFont.ascent)
-        return ascentGlyphUnits * pointsPerGlyphUnits()
+        return ascentGlyphUnits * ptsPerGlyphUnits()
     }
     
-    /// descent: max distance below baseline in points
-    func decent() -> CGFloat {
+    /// ptsDescent: max distance below baseline in points
+    func ptsDescent() -> CGFloat {
         let descentGlyphUnits = CGFloat(cgFont.descent)
-        return descentGlyphUnits * pointsPerGlyphUnits()
+        return descentGlyphUnits * ptsPerGlyphUnits()
     }
     
-    /// leading: spacing between consecutive text lines in points
-    func leading() -> CGFloat {
+    /// ptsLeading: spacing between consecutive text lines in points
+    func ptsLeading() -> CGFloat {
         let leadingGlyphUnits = CGFloat(cgFont.leading)
-        return leadingGlyphUnits * pointsPerGlyphUnits()
+        return leadingGlyphUnits * ptsPerGlyphUnits()
     }
     
-    /// capHeight: distance baseline to flat capital letters top
-    func capHeight() -> CGFloat {
+    /// ptsCapHeight: distance baseline to flat capital letters top
+    func ptsCapHeight() -> CGFloat {
         let capHeightGlyphUnits = CGFloat(cgFont.capHeight)
-        return capHeightGlyphUnits * pointsPerGlyphUnits()
+        return capHeightGlyphUnits * ptsPerGlyphUnits()
     }
     
     /// xHeight: distance baseline to top of flat, non-ascending lowercase letters (e.g. "x")
     func xHeight() -> CGFloat {
         let xHeightGlyphUnits = CGFloat(cgFont.xHeight)
-        return xHeightGlyphUnits * pointsPerGlyphUnits()
+        return xHeightGlyphUnits * ptsPerGlyphUnits()
     }
     
     /// italicAngle: degrees counter-clockwise from the vertical
@@ -273,7 +273,7 @@ struct FontMetricsExtractor {
     }
     
     /// - Returns: font points per glyph units
-    func pointsPerGlyphUnits() -> CGFloat {
+    func ptsPerGlyphUnits() -> CGFloat {
         return cgFontSize / glyphUnitsPerEm()
     }
     

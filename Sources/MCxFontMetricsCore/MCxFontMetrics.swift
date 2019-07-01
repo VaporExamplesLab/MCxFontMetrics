@@ -7,8 +7,6 @@
 
 import Foundation
 
-internal let fontmetricsDirUrl = URL(fileURLWithPath: "/opt/local/fontmetrics", isDirectory: true)
-
 public final class MCxFontMetrics {
     private let arguments: [String]
 
@@ -19,12 +17,24 @@ public final class MCxFontMetrics {
     public func run() throws {
         print("Hello world")
         
-        let gaugeRegular = FontHelper.PostscriptName.gaugeRegular
-        let fontMetric = FontMetric(font: gaugeRegular)
+        let fontFamily = FontHelper.PostscriptName.gaugeRegular
+        let fontSize: CGFloat = 12.0
         
-        FontMetric.fileSave(fontMetric)
+        let extractor = try! FontMetricsExtractor(fontFamily: fontFamily, fontSize: fontSize)
         
-        guard let fontMetric_In = FontMetric.fileLoad(font: gaugeRegular) 
+        let fontMetric = FontPointFamilyMetrics(
+            fontFamily: fontFamily, 
+            fontSize: fontSize, 
+            ptsAscent: extractor.ptsAscent(), 
+            ptsDescent: extractor.ptsDescent(), 
+            ptsLeading: extractor.ptsLeading(), 
+            ptsCapHeight: extractor.ptsCapHeight(), 
+            glyphUnitsPerEm: extractor.glyphUnitsPerEm(), 
+            ptsPerGlyphUnits: extractor.ptsPerGlyphUnits())
+        
+        FontPointFamilyMetrics.fileSave(fontMetric)
+        
+        guard let fontMetric_In = FontPointFamilyMetrics.fileLoad(fontFamily: fontFamily, fontSize: fontSize) 
             else { return }
         
         print("Summary\n\(fontMetric_In.summary())")
