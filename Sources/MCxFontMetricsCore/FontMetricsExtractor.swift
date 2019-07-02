@@ -44,7 +44,7 @@ struct FontMetricsExtractor {
     }
     
     /// - Returns: font space values
-    func getAdvances(string: String) -> (width: CGFloat, sizes: [CGSize])? {
+    func getAdvances(string: String) -> (overall: CGFloat, sizes: [CGSize])? {
         //let string = filterToExisting(string)
         var unichars = [UniChar](string.utf16)
         var glyphs = [CGGlyph](repeating: 0, count: unichars.count)
@@ -62,7 +62,7 @@ struct FontMetricsExtractor {
         let glyphsCount = glyphs.count
         
         var advances = [CGSize](repeating: CGSize(width: 0.0, height: 0.0), count: glyphsCount)
-        let width: Double = CTFontGetAdvancesForGlyphs(
+        let widthOverall: Double = CTFontGetAdvancesForGlyphs(
             ctFont,      // font: CTFont
             .horizontal, // orientation: CFFontOrientation
             glyphs,      // glyphs: UnsafePointer<CGGlyph>
@@ -70,7 +70,7 @@ struct FontMetricsExtractor {
             glyphsCount  // count: CFIndex
         )
         
-        return (width: CGFloat(width), sizes: advances)
+        return (overall: CGFloat(widthOverall), sizes: advances)
     }
     
     func getBoundingRects(string: String) -> (overall: CGRect, list: [CGRect])? {
@@ -190,7 +190,7 @@ struct FontMetricsExtractor {
                     ) {
                     // ... and add it to the map.
                     
-                    let advance = getAdvances(string: characterStr)!.width
+                    let advance = getAdvances(string: characterStr)!.overall
                     let rectBounds = getBoundingRects(string: characterStr)!.list[0]
                     let rectOptical = getOpticalRects(string: characterStr)!.list[0]
                     
@@ -398,57 +398,7 @@ struct FontMetricsExtractor {
         print("  type42: \(cgFont.canCreatePostScriptSubset(CGFontPostScriptFormat.type42))")
     }
     
-    
-    func wordwrap(string: String, bounds: CGSize) -> [String] {
-        let wordList = string.components(separatedBy: .whitespacesAndNewlines)
-        var result: [String] = [""]
-        
-        guard let spaceWidth = getAdvances(string: " ")?.width
-            else { return [string] }
-        
-        var i = 0
-        var firstLineWord = true
-        for word in wordList {
-            guard let lineWidth = getAdvances(string: result[i])?.width
-                else { return [string] }
-            guard let wordWidth = getAdvances(string: word)?.width
-                else { return [string] }
-            if (lineWidth + spaceWidth + wordWidth) > bounds.width {
-                result.append("")
-                i = i + 1
-                firstLineWord = true
-            }
-            if firstLineWord {
-                result[i].append(word)
-                firstLineWord = false
-            }
-            else {
-                result[i].append(word)
-            }
-        }
-        
-        return result
-    }
-    
     // MARK: - Glyph Space
-    
-//    func filterToExisting(_ text: String) -> String {
-//        var result = ""        
-//        for character in text {
-//            let string = "\(character)"
-//            let cfString = string as CFString
-//            // table tag
-//            // CoreText `cmap` - character id to glyph id mapping
-//            cmapFontTableTag
-//            // CoreText `fdsc` table - font descriptor
-//            descriptorFontTableTag
-//            cgFont.table(for: <#T##UInt32#>)
-//            let cgGlyph = cgFont.getGlyphWithGlyphName(name: cfString)
-//            let hexcode = String(format: "%04x", string.utf16.first!)
-//            print("cgGlyph = \(cgGlyph) ... \(cfString) ... \(hexcode)")
-//        }
-//        return result
-//    }
     
     /// Provides glyph names. `from` and `to` are range checked.
     ///

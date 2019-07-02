@@ -115,6 +115,25 @@ final class MCxFontMetricsTests: XCTestCase {
         }
     }
     
+    func testWorkwrap() {
+        let fontFamily = FontHelper.PostscriptName.dejaVuMono
+        let fontSize: CGFloat = 12.0
+        guard let fontMetric = FontPointFamilyMetrics.fileLoad(fontFamily: fontFamily, fontSize: fontSize) 
+            else { 
+                XCTFail("testWorkwrap() could not load font \(fontFamily) \(fontSize)") 
+                return
+        }
+        
+        let string = "supercaliflawjalisticexpialadoshus a b c d e f g h i j k l m n o p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. supercaliflawjalisticexpialadoshus"
+        
+        let lines = fontMetric.wordwrap(string: string, width: 200.0)
+        for l in lines {
+            print(l)
+        }
+        
+        XCTAssert(lines.count == 9)
+    }
+    
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)
@@ -139,6 +158,7 @@ final class MCxFontMetricsTests: XCTestCase {
     static var allTests = [
         ("testExample", testExecutable),
         ("testExample", testFramework),
+        ("testWorkwrap", testWorkwrap),
         ("testProductsDirectory", testProductsDirectory),
         ]
 }

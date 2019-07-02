@@ -157,8 +157,69 @@ public struct FontPointFamilyMetrics: Codable {
         print(result)
     }
     
-    func wordwrap(string: String, bounds: CGSize) -> [String] {
-        fatalError()
+    /// Note: wordwrap process removes all whitespace 
+    /// and only adds back in 1 space between words on the same line.
+    /// All other whitespace is lost.
+    func wordwrap(string: String, width maxWidth: CGFloat) -> [String] {
+        let wordList = string.components(separatedBy: .whitespacesAndNewlines)
+        var result: [String] = [""]
+        
+        let spaceWidth = getAdvances(string: " ").overall
+        
+        var lineIdx = 0
+        var firstLineWord = true
+        var lineWidth: CGFloat = 0.0
+        for word in wordList {
+            let wordWidth = getAdvances(string: word).overall
+
+            if wordWidth > maxWidth {
+                // :WIP: currently puts an oversize word on a single line.
+                print("WARNING: \(word) wordWidth \(wordWidth) > maxWidth \(maxWidth)")
+                if firstLineWord {
+                    result[lineIdx].append(word) // add to existing empty line
+                    result.append("")            // start next row
+                    lineIdx = lineIdx + 1
+                    lineWidth = 0.0
+                }
+                else {
+                    result.append("")            // start a new line
+                    lineIdx = lineIdx + 1
+                    
+                    result[lineIdx].append(word) // add to the new line
+                    
+                    result.append("")            // start another new line
+                    lineIdx = lineIdx + 1
+                    lineWidth = 0.0
+                    firstLineWord = true
+                }
+            }
+            else if (lineWidth + spaceWidth + wordWidth) > maxWidth {
+                result.append("")            // start a new line
+                lineIdx = lineIdx + 1
+                
+                result[lineIdx].append(word) // add to the new line
+                firstLineWord = false
+                lineWidth = wordWidth
+            }
+            else {
+                if firstLineWord {
+                    result[lineIdx].append(word) // add to existing line
+                    lineWidth = lineWidth + wordWidth
+                    firstLineWord = false
+                }
+                else {
+                    result[lineIdx].append(" \(word)") // add space + word to existing line
+                    lineWidth = lineWidth + spaceWidth + wordWidth
+                    firstLineWord = false
+                }    
+            }
+        } // for each word
+        
+        if result[result.count - 1].isEmpty {
+            result.remove(at: result.count - 1)
+        }
+        
+        return result
     }
     
     internal func hexString(_ uft32: UnicodeScalar) -> String {
