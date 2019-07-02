@@ -160,56 +160,55 @@ struct FontMetricsExtractor {
         for plane: UInt8 in 0...16 where charset.hasMember(inPlane: plane) {
             // 
             for utf32Char: UTF32Char in UTF32Char(plane) << 16 ..< UTF32Char(plane + 1) << 16 {
-                // Range limit for smaller tables. 
-                // Comment out range limit to include all characters.
-                // Modify range limit check to include select table areas.
-                // :NYI: add some [RangeCheck]? to the argument list.
-                //if utf32Char >= 0x00000600 {
-                //    continue
-                //}
                 
-                if let unicodeScalar = UnicodeScalar(utf32Char), charset.contains(unicodeScalar) {
-                    
-                    //UTF16Char(truncatingIfNeeded: <#T##BinaryInteger#>)
-                    
-                    let characterStr = String(unicodeScalar)
-                    // Get glyph for this `uniChar` ...
-                    // let unichar16 = [UniChar](unicodeScalar.utf16)
-                    let utf16CharArray: [UTF16.CodeUnit] = Array(unicodeScalar.utf16)
-                    //UInt32.max
-                    if utf16CharArray.count != 1 {
-                        print("WARNING: utf16CharArray.count != 1 \(utf16CharArray) unicodeScalar=\(unicodeScalar.value) ")
+                if utf32Char >= UInt32.max {
+                    print("WARNING: utf32Char >= UInt32.max \(utf32Char)")
+                    continue
+                }
+                
+                guard let unicodeScalar = UnicodeScalar(utf32Char)
+                    else {
                         continue
+                }
+                
+                if charset.contains(unicodeScalar) == false {
+                    continue
+                }
+
+                var characterStr = ""
+                characterStr.append(Character(unicodeScalar))
+                
+                let utf16Char = UTF16Char(truncatingIfNeeded: utf32Char)
+                let utf16CharArray: [UTF16.CodeUnit] = [utf16Char]
+                
+                var glyphs = [CGGlyph](repeating: 0, count: utf16CharArray.count)
+                if CTFontGetGlyphsForCharacters(
+                    ctFont,              // font: CTFont
+                    utf16CharArray,      // characters: UnsafePointer<UniChar>
+                    &glyphs,             // UnsafeMutablePointer<CGGlyph>
+                    utf16CharArray.count // count: CFIndex
+                    ) {
+                    // ... and add it to the map.
+                    
+                    let advance = getAdvances(string: characterStr)!.width
+                    let rectBounds = getBoundingRects(string: characterStr)!.list[0]
+                    let rectOptical = getOpticalRects(string: characterStr)!.list[0]
+                    
+                    do {
+                        let metrics = try FontPointMetrics(
+                            characterStr,
+                            advance: advance,
+                            rectBounds: rectBounds,
+                            rectOptical: rectOptical 
+                        )
+                        
+                        utf32ToMetrics[utf32Char] = metrics
+                    }
+                    catch {
+                        print("WARNING: \(characterStr) not found in CharacterSet")
                     }
                     
-                    var glyphs = [CGGlyph](repeating: 0, count: utf16CharArray.count)
-                    if CTFontGetGlyphsForCharacters(
-                        ctFont,         // font: CTFont
-                        utf16CharArray,      // characters: UnsafePointer<UniChar>
-                        &glyphs,        // UnsafeMutablePointer<CGGlyph>
-                        utf16CharArray.count // count: CFIndex
-                        ) {
-                        // ... and add it to the map.
-                        
-                        let advance = getAdvances(string: characterStr)!.width
-                        let rectBounds = getBoundingRects(string: characterStr)!.list[0]
-                        let rectOptical = getOpticalRects(string: characterStr)!.list[0]
-                        
-                        do {
-                            let metrics = try FontPointMetrics(
-                                characterStr,
-                                advance: advance,
-                                rectBounds: rectBounds,
-                                rectOptical: rectOptical 
-                            )
-                            
-                            utf32ToMetrics[utf32Char] = metrics
-                        }
-                        catch {
-                            print("WARNING: \(characterStr) not found in CharacterSet")
-                        }
-                        
-                    }
+                    
                 }
             }
         }

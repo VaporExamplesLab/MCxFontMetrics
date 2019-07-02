@@ -70,37 +70,28 @@ public struct FontPointFamilyMetrics: Codable {
         self.lookup = lookup
         
         // Compute values for font family
-        self.unavailableAdvance = 0.6 * fontSize
-        self.unavailableAscent = 0.8 * ptsAscent
-        self.unavailableDescent = 0.0
+        self.unavailableAdvance = fontSize
+        self.unavailableAscent = ptsAscent
+        self.unavailableDescent = ptsDescent
         self.unavailableBounds = CGRect(
             x: 0.0, 
             y: 0.0, 
             width: unavailableAdvance, 
-            height: unavailableAscent - unavailableDescent
+            height: fontSize
         )
         self.unavailableOptical = CGRect(
             x: 0.0, 
             y: 0.0, 
             width: unavailableAdvance, 
-            height: unavailableAscent - unavailableDescent
+            height: fontSize
         )
     }
     
-    //let advances: [String: CGFloat]
-    
-    // points
-    //let size: CGFloat
-    //let pointsPerGlyphUnit: CGFloat
-    
     func summary() -> String {
         var str = fontFamily.rawValue
-        str = str.appending("\n")
+        str.append(" \(fontSize)\n")
+        str.append("ptsAscent=\(ptsAscent), ptsDescent=\(ptsDescent)\n")
         return str
-    }
-    
-    func maxAscentCharacter() {
-        fatalError("not implemented")
     }
     
     /// - Returns: overall total string width, each character advance
