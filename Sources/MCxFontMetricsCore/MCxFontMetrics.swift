@@ -15,21 +15,31 @@ public final class MCxFontMetrics {
     }
 
     public func run() throws {
-        // Fonts used by labels.
-        processOneFont(fontFamily: .gaugeRegular, fontSize: 12.0)
-        processOneFont(fontFamily: .gaugeHeavy, fontSize: 12.0)
-        processOneFont(fontFamily: .dejaVuCondensed, fontSize: 12.0)
-        processOneFont(fontFamily: .mswImpact, fontSize: 12.0)
-        processOneFont(fontFamily: .dejaVuMono, fontSize: 12.0)
-        processOneFont(fontFamily: .liberationNarrow, fontSize: 12.0)
+        // -- Fonts used by labels. --
+        //processOneFont(fontFamily: .gaugeRegular, fontSize: 12.0)
+        //processOneFont(fontFamily: .gaugeHeavy, fontSize: 12.0)
 
-        // Font size 48.0 used used to generate FontMetricsPage.
-        processOneFont(fontFamily: .gaugeRegular, fontSize: 48.0)
-        processOneFont(fontFamily: .gaugeHeavy, fontSize: 48.0)
-        processOneFont(fontFamily: .dejaVuCondensed, fontSize: 48.0)
-        processOneFont(fontFamily: .mswImpact, fontSize: 48.0)
-        processOneFont(fontFamily: .dejaVuMono, fontSize: 48.0)
-        processOneFont(fontFamily: .liberationNarrow, fontSize: 48.0)
+        //processOneFont(fontFamily: .dejaVuCondensed, fontSize: 12.0)
+        //processOneFont(fontFamily: .dejaVuCondensed, fontSize: 11.0)
+        processOneFont(fontFamily: .dejaVuCondensed, fontSize: 10.0)
+        //processOneFont(fontFamily: .dejaVuCondensedOblique, fontSize: 12.0)
+        //processOneFont(fontFamily: .dejaVuCondensedOblique, fontSize: 11.0)
+        //processOneFont(fontFamily: .dejaVuCondensedOblique, fontSize: 10.0)
+
+        //processOneFont(fontFamily: .mswImpact, fontSize: 12.0)
+
+        //processOneFont(fontFamily: .dejaVuMono, fontSize: 12.0)
+        //processOneFont(fontFamily: .dejaVuMonoBold, fontSize: 12.0)
+
+        //processOneFont(fontFamily: .liberationNarrow, fontSize: 12.0)
+        
+        // -- Font size 48.0 used used to generate FontMetricsPage. --
+        //processOneFont(fontFamily: .gaugeRegular, fontSize: 48.0)
+        //processOneFont(fontFamily: .gaugeHeavy, fontSize: 48.0)
+        //processOneFont(fontFamily: .dejaVuCondensed, fontSize: 48.0)
+        //processOneFont(fontFamily: .mswImpact, fontSize: 48.0)
+        //processOneFont(fontFamily: .dejaVuMono, fontSize: 48.0)
+        //processOneFont(fontFamily: .liberationNarrow, fontSize: 48.0)
     }
     
     internal func processOneFont(fontFamily: FontHelper.PostscriptName, fontSize: CGFloat) {

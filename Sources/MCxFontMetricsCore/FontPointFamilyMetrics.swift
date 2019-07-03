@@ -264,7 +264,7 @@ public struct FontPointFamilyMetrics: Codable {
         }
     }
     
-    static private func toFilename(fontFamily: FontHelper.PostscriptName, fontSize: CGFloat) -> String {
+    private static func toFilename(fontFamily: FontHelper.PostscriptName, fontSize: CGFloat) -> String {
         let fontFamilyName = fontFamily.rawValue
         let fontSizeStr = String(format: "%.1f", fontSize)
         // let fontSizeStr = String(format: "%.1f", Float(fontSize))
