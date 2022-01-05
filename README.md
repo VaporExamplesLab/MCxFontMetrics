@@ -201,3 +201,8 @@ cp -f MCxFontMetrics /opt/local/bin/MCxFontMetrics
 ```
 
 ## Resources <a id="linkResources"></a>[▴](#toc)
+
+* [AppleOS: CoreText](https://developer.apple.com/documentation/coretext)
+* [R: systemfonts](https://github.com/r-lib/systemfonts) … native system font handling
+* Linux: FontConfig 
+* Freetype

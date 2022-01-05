@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreText
 
 /// Provides metrics for a specific font.
 ///

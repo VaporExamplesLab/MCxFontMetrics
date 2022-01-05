@@ -9,7 +9,7 @@ final class MCxFontMetricsTests: XCTestCase {
     
     func terminationExample(process: Process, expectation: XCTestExpectation) {
         DispatchQueue.main.async {
-            print("•••ENTER••• terminationExample dispatch")
+            print("•••ENTER: terminationExample dispatch •••")
             let taskStatus = process.terminationStatus
             
             if (taskStatus == 0) {
@@ -18,14 +18,19 @@ final class MCxFontMetricsTests: XCTestCase {
             } else {
                 debugPrint("Fail: terminationExample() task did not complete.")
             }
-            print("•••EXIT••• terminationExample dispatch")
+            print("•••EXIT: terminationExample dispatch •••")
         }
     }
     
+    // :WIP: review and document
     func testExecutable() throws {
-        print("\n######################")
-        print("## testExecutable() ##")
-        print("######################")
+        print(
+        """
+        \n
+        ######################
+        ## testExecutable() ##
+        ######################
+        """)
         
         // Some APIs used require macOS 10.13 and above.
         guard #available(macOS 10.13, *) else {
@@ -51,9 +56,9 @@ final class MCxFontMetricsTests: XCTestCase {
         
         process.terminationHandler = { 
             (task: Process) -> Void in
-            print("•••ENTER••• terminationHandler")
+            print("•••ENTER: terminationHandler •••")
             self.terminationExample(process: task, expectation: expectation)
-            print("•••EXIT••• terminationHandler")
+            print("•••EXIT terminationHandler •••")
         }
         
         let stdoutPipe = Pipe()
@@ -66,7 +71,9 @@ final class MCxFontMetricsTests: XCTestCase {
         let stdoutData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
         if let stdoutStr = String(data: stdoutData, encoding: .utf8) {
             print("\n## stdOutput\n\(stdoutStr)")
-            XCTAssert(stdoutStr.contains("Hello"))
+            // "Summary\nDejaVuSansCondensed 10.0\nptsAscent=9.2822265625, ptsDescent=-2.3583984375\n\n"
+            XCTAssert(stdoutStr.contains("Summary"))
+            //XCTAssert(stdoutStr.contains("Hello"))
         }
         else {
             throw MCxFontMetrics.Error.failedToDoSomething
